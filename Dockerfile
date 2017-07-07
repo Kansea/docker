@@ -1,5 +1,5 @@
 # Use an official ubuntu 16.04  as a parent image
-FROM kansea/cuda:latest
+FROM kansea/cuda:py3-cv3-ffmpeg-chainer
 
 # Author name
 MAINTAINER Jiaqing Lin
@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     python3-dbg \
     python3-pip \
-    build-essential
+    build-essential \
+    ffmpeg
     
 RUN pip3 install --no-cache-dir --upgrade pip && \
     pip3 install \
