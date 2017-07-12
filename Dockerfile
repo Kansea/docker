@@ -1,5 +1,5 @@
 # Use an official ubuntu 16.04  as a parent image
-FROM kansea/cuda:cuda
+FROM kansea/cuda:lin
 
 # Author name
 MAINTAINER Jiaqing Lin
@@ -36,6 +36,8 @@ RUN apt-get update && apt-get install --assume-yes apt-utils \
     libv4l-dev \
     libatlas-base-dev \
     gfortran \
+    ffmpeg \
+    libopencv-dev \
     libhdf5-dev
 
 # Install python libs
@@ -57,6 +59,8 @@ Run pip3 install \
 
 # Download OpenCV 3.2.0 and install
 RUN cd ~ && \
+    rm -rf opencv && \
+    rm -rf opencv_contrib && \
     git clone https://github.com/opencv/opencv.git && \
     git clone https://github.com/opencv/opencv_contrib.git && \
     cd /root/opencv && \
@@ -70,7 +74,6 @@ RUN cd ~ && \
           -D WITH_FFMPEG=ON \
           -D BUILD_opencv_python3=ON \
           -D BUILD_EXAMPLES=OFF .. && \
-    
     cd ~/opencv/build && \
     make -j $(nproc) && \
     make install && \
@@ -87,8 +90,6 @@ RUN cd ~ && \
     rm -rf ~/opencv_contrib/doc && \
     # Change opencv lib file name
     cd /usr/local/lib/python3.5/dist-packages && \
-    mv cv2.cpython-35m-x86_64-linux-gnu.so cv2.so && \
-    cd cv2 && \
     mv cv2.cpython-35m-x86_64-linux-gnu.so cv2.so
 
 # Run app.py when the container launches
