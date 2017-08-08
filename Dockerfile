@@ -1,5 +1,5 @@
 # Use an official ubuntu 16.04  as a parent image
-FROM kansea/cuda:lin
+FROM kansea/cuda:opencv
 
 # Author name
 MAINTAINER Jiaqing Lin
@@ -46,7 +46,8 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
     numpy \
     matplotlib \
     scipy \
-    pillow
+    pillow \
+    youtube_dl
 
 # Install cuda-python
 RUN pip3 install \
