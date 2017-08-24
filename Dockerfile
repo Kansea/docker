@@ -1,5 +1,5 @@
 # Use an official ubuntu 16.04  as a parent image
-FROM kansea/cuda:opencv
+FROM nvidia/cuda:8.0-cudnn5-devel
 
 # Author name
 MAINTAINER Jiaqing Lin
@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install --assume-yes apt-utils \
     unzip \
     vim \
     wget \
+    nasm \
     python3 \
     python3-dev \
     python3-dbg \
@@ -36,9 +37,21 @@ RUN apt-get update && apt-get install --assume-yes apt-utils \
     libv4l-dev \
     libatlas-base-dev \
     gfortran \
-    ffmpeg \
     libopencv-dev \
     libhdf5-dev
+
+# Install ffmpeg3
+RUN cd ~ && \
+    rm -rf ffmpeg && \
+    git clone https://git.ffmpeg.org/ffmpeg.git && \
+    cd /root/ffmpeg && \
+    ./configure --enable-cuda --enable-cuvid --enable-nvenc \
+                --enable-nonfree --enable-libnpp \
+                --extra-cflags=-I/usr/local/cuda/include \
+                --extra-ldflags=-L/usr/local/cuda/lib64 && \
+    make -j $(nproc) && \
+    export PATH=$PATH:/root/ffmpeg && \
+    ldconfig
 
 # Install python libs
 RUN pip3 install --no-cache-dir --upgrade pip && \
@@ -47,6 +60,7 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
     matplotlib \
     scipy \
     pillow \
+    h5py \
     youtube_dl
 
 # Install cuda-python
@@ -92,6 +106,3 @@ RUN cd ~ && \
     # Change opencv lib file name
     cd /usr/local/lib/python3.5/dist-packages && \
     mv cv2.cpython-35m-x86_64-linux-gnu.so cv2.so
-
-# Run app.py when the container launches
-#CMD ["python3", "app.py"]
