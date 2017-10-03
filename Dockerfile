@@ -5,7 +5,7 @@ FROM nvidia/cuda:8.0-cudnn5-devel
 MAINTAINER Jiaqing Lin
 
 # Set the working directory to /app
-#WORKDIR /app
+WORKDIR /projects
 
 # Copy the current directory contents into the container at /app
 #ADD . /app
@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install --assume-yes apt-utils \
     python3-tk \
     build-essential \
     pkg-config \
+    libglew-dev \
     libjpeg8-dev \
     libtiff5-dev \
     libjasper-dev \
@@ -33,12 +34,17 @@ RUN apt-get update && apt-get install --assume-yes apt-utils \
     libgtk2.0-dev \
     libavcodec-dev \
     libavformat-dev \
+    libavutil-dev \
+    libpostproc-dev \
     libswscale-dev \
     libv4l-dev \
     libatlas-base-dev \
     gfortran \
     libopencv-dev \
-    libhdf5-dev
+    libhdf5-dev \
+    zlib1g-dev \
+    libeigen3-dev \
+    libtbb-dev
 
 # Install ffmpeg3
 RUN cd ~ && \
@@ -61,6 +67,7 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
     scipy \
     pillow \
     h5py \
+    tqdm \
     youtube_dl
 
 # Install cuda-python
@@ -87,6 +94,8 @@ RUN cd ~ && \
           -D INSTALL_PYTHON_EXAMPLES=OFF \
           -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib/modules \
           -D WITH_FFMPEG=ON \
+          -D WITH_CUDA=ON \
+          -D CUDA_NVCC_FLAGS="-D_FORCE_INLINES" \
           -D BUILD_opencv_python3=ON \
           -D BUILD_EXAMPLES=OFF .. && \
     cd ~/opencv/build && \
