@@ -1,11 +1,11 @@
 # Use an official ubuntu 16.04  as a parent image
-FROM nvidia/cuda:8.0-cudnn5-devel
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 
 # Author name
 MAINTAINER Jiaqing Lin
 
 # Set the working directory to /app
-WORKDIR /projects
+WORKDIR /root
 
 # Copy the current directory contents into the container at /app
 #ADD . /app
@@ -40,11 +40,11 @@ RUN apt-get update && apt-get install --assume-yes apt-utils \
     libv4l-dev \
     libatlas-base-dev \
     gfortran \
-    libopencv-dev \
     libhdf5-dev \
     zlib1g-dev \
     libeigen3-dev \
-    libtbb-dev
+    libtbb-dev \
+    libboost-all-dev
 
 # Install ffmpeg3
 RUN cd ~ && \
@@ -73,13 +73,11 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 # Install cuda-python
 RUN pip3 install \
     pycuda \
-    cupy
-
-# Install Chainer framework
-Run pip3 install \
+    cupy \
+    # Install Chainer framework
     chainer
 
-# Download OpenCV 3.2.0 and install
+# Download OpenCV 3.x.x latest version and install
 RUN cd ~ && \
     rm -rf opencv && \
     rm -rf opencv_contrib && \
@@ -96,6 +94,9 @@ RUN cd ~ && \
           -D WITH_FFMPEG=ON \
           -D WITH_CUDA=ON \
           -D CUDA_NVCC_FLAGS="-D_FORCE_INLINES" \
+          -D ENABLE_FAST_MATH=1 \
+          -D CUDA_FAST_MATH=1 \
+          -D WITH_CUBLAS=1 \
           -D BUILD_opencv_python3=ON \
           -D BUILD_EXAMPLES=OFF .. && \
     cd ~/opencv/build && \
