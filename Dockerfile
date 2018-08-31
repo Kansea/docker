@@ -132,3 +132,21 @@ RUN cd ~ && \
     # Change opencv lib file name
     # cd /usr/local/lib/python3.5/dist-packages && \
     # mv cv2.cpython-35m-x86_64-linux-gnu.so cv2.so
+
+# Install OpenPose
+RUN ln -s /usr/local/lib/python3.5/dist-packages/numpy/core/include/numpy /usr/local/include/numpy && \
+    cd ~ && \
+    git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git && \
+    mkdir openpose/build && cd openpose/build && \
+    cmake .. && make -j $(nproc) && make install && ldconfig
+ENV OPENPOSE_ROOT=/usr/local
+
+#  Install PyOpenPose
+RUN cd ~ && \
+    git clone https://github.com/FORTH-ModelBasedTracker/PyOpenPose.git && \
+    mkdir PyOpenPose/build
+RUN sed -i '54,55 s/^/#/' /root/PyOpenPose/CMakeLists.txt
+RUN sed -i '58,59 s/^#//' /root/PyOpenPose/CMakeLists.txt
+RUN cd /root/PyOpenPose/build && cmake .. && make -j $(nproc)
+RUN cd /root/PyOpenPose/build && cp PyOpenPoseLib/PyOpenPose.so /usr/local/lib/python3.5/dist-packages/
+RUN cd ~ && cp -r openpose/models /usr/local/models
