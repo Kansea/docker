@@ -1,4 +1,5 @@
-FROM nvidia/cuda:9.1-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:8.0-cudnn7-devel-ubuntu16.04
+# FROM nvidia/cuda:9.1-cudnn7-devel-ubuntu16.04
 
 LABEL maintainer="Jiaqing Lin"
 
@@ -6,50 +7,49 @@ WORKDIR /root
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        apt-utils \
-        cmake \
-        curl \
-        git \
-        unzip \
-        vim \
-        wget \
-        nasm \
-        python3 \
-        python3-dev \
-        python3-dbg \
-        python3-pip \
-        python3-tk \
-        build-essential \
-        pkg-config \
-        libglew-dev \
-        libjpeg8-dev \
-        libtiff5-dev \
-        libjasper-dev \
-        libpng12-dev \
-        libgtk2.0-dev \
-        libavcodec-dev \
-        libavformat-dev \
-        libavutil-dev \
-        libavdevice-dev \
-        libavfilter-dev \
-        libpostproc-dev \
-        libswresample-dev \
-        libfaac-dev libgpac-dev \
-        libx265-dev libx264-dev libfdk-aac-dev \
-        libswscale-dev \
-        libv4l-dev \
-        libatlas-base-dev \
-        gfortran \
-        libhdf5-dev \
-        zlib1g-dev \
-        libeigen3-dev \
-        libtbb-dev \
-        libboost-all-dev libgoogle-glog-dev libgflags-dev \
-        ocl-icd-opencl-dev libprotobuf-dev protobuf-compiler \
-        ffmpeg && \
-       parallel && \
-        apt-get clean && \
-        rm -rf /var/lib/apt/lists/*
+    apt-utils \
+    cmake \
+    curl \
+    git \
+    unzip \
+    vim \
+    wget \
+    nasm \
+    python3 \
+    python3-dev \
+    python3-dbg \
+    python3-pip \
+    python3-tk \
+    build-essential \
+    pkg-config \
+    libglew-dev \
+    libjpeg8-dev \
+    libtiff5-dev \
+    libjasper-dev \
+    libpng12-dev \
+    libgtk2.0-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libavutil-dev \
+    libavdevice-dev \
+    libavfilter-dev \
+    libpostproc-dev \
+    libswresample-dev \
+    libfaac-dev libgpac-dev \
+    libx265-dev libx264-dev libfdk-aac-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libatlas-base-dev \
+    gfortran \
+    libhdf5-dev \
+    zlib1g-dev \
+    libeigen3-dev \
+    libtbb-dev \
+    libboost-all-dev libgoogle-glog-dev libgflags-dev \
+    ocl-icd-opencl-dev libprotobuf-dev protobuf-compiler \
+    ffmpeg && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir --upgrade pip
 RUN pip3 install \
@@ -64,7 +64,8 @@ RUN pip3 install \
     h5py \
     joblib
 
-RUN pip3 install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp35-cp35m-linux_x86_64.whl
+# RUN pip3 install http://download.pytorch.org/whl/cu91/torch-0.4.0-cp35-cp35m-linux_x86_64.whl
+RUN pip3 install http://download.pytorch.org/whl/cu80/torch-0.4.1-cp35-cp35m-linux_x86_64.whl
 RUN pip3 install torchvision
 
 # Download OpenCV 3.x.x latest version and install
@@ -111,8 +112,9 @@ RUN cd ~ && \
 # Install OpenPose
 RUN ln -s /usr/local/lib/python3.5/dist-packages/numpy/core/include/numpy /usr/local/include/numpy && \
     cd ~ && \
-    git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git
+    git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose.git && \
     mkdir openpose/build && cd openpose/build && \
     cmake -DBUILD_PYTHON=ON .. && \
     make -j $(nproc) && make install && ldconfig
+
 ENV OPENPOSE_ROOT=/usr/local
